@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B44A85442A1F410600D63A18 /* KalmanFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B44A85432A1F410600D63A18 /* KalmanFilter.swift */; };
 		B4C1D855299B52640072403D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4C1D854299B52640072403D /* AppDelegate.swift */; };
 		B4C1D857299B52640072403D /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4C1D856299B52640072403D /* SceneDelegate.swift */; };
 		B4C1D859299B52640072403D /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4C1D858299B52640072403D /* ViewController.swift */; };
@@ -36,6 +37,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		B44A85432A1F410600D63A18 /* KalmanFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KalmanFilter.swift; sourceTree = "<group>"; };
 		B4C1D851299B52640072403D /* Ibeacon_Location.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Ibeacon_Location.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B4C1D854299B52640072403D /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		B4C1D856299B52640072403D /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -106,6 +108,7 @@
 				B4C1D85D299B52650072403D /* Assets.xcassets */,
 				B4C1D85F299B52650072403D /* LaunchScreen.storyboard */,
 				B4C1D862299B52650072403D /* Info.plist */,
+				B44A85432A1F410600D63A18 /* KalmanFilter.swift */,
 			);
 			path = Ibeacon_Location;
 			sourceTree = "<group>";
@@ -261,6 +264,7 @@
 				B4C1D859299B52640072403D /* ViewController.swift in Sources */,
 				B4C1D855299B52640072403D /* AppDelegate.swift in Sources */,
 				B4C1D857299B52640072403D /* SceneDelegate.swift in Sources */,
+				B44A85442A1F410600D63A18 /* KalmanFilter.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
