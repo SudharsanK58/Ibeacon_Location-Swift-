@@ -91,8 +91,8 @@ class ViewController: UIViewController, CLLocationManagerDelegate, CBCentralMana
                 // Replace with the UUID of the UART characteristic if known
                 if characteristic.properties.contains(.write) || characteristic.properties.contains(.writeWithoutResponse) {
 //                    let message = ":100000004643464200000156000000000103030081\n:1000100000000000000000000000000000000000E0"
-                    let message = ":0200000460009A\r:100000004643464200000156000000000103030081\n:1000100000000000000000000000000000000000E0\n:100060000000000000000000000000000000000090\n:00000001FF"
-                    print(message)
+                    let message = ":0200000460009A\r:100000004643464200000156000000000103030081\r:1000100000000000000000000000000000000000E0\r:100060000000000000000000000000000000000090\r:00000001FF"
+                    print(message.count)
                     if let data = message.data(using: .utf8) {
                         peripheral.writeValue(data, for: characteristic, type: .withResponse) // Or .withoutResponse if appropriate
                     }
