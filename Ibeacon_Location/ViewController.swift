@@ -1,38 +1,60 @@
 import UIKit
-import CoreLocation
+import CoreBluetooth
 
-class ViewController: UIViewController, CLLocationManagerDelegate {
+class ViewController: UIViewController, CBCentralManagerDelegate, CBPeripheralDelegate {
     
-    var locationManager: CLLocationManager!
+    var centralManager: CBCentralManager!
+    var targetPeripheral: CBPeripheral?
+    var uartCharacteristic: CBCharacteristic?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        locationManager = CLLocationManager()
-        locationManager.delegate = self
-        locationManager.requestAlwaysAuthorization()
+        centralManager = CBCentralManager(delegate: self, queue: nil)
     }
     
-    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
-        if status == .authorizedAlways {
-            if CLLocationManager.isMonitoringAvailable(for: CLBeaconRegion.self) {
-                if CLLocationManager.isRangingAvailable() {
-                    startScanning()
-                }
+    func centralManagerDidUpdateState(_ central: CBCentralManager) {
+        if central.state == .poweredOn {
+            centralManager.scanForPeripherals(withServices: nil, options: nil)
+        }
+    }
+    
+    func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String : Any], rssi RSSI: NSNumber) {
+        if peripheral.name == "BIBO 1.1 A" {
+            centralManager.stopScan()
+            targetPeripheral = peripheral
+            targetPeripheral?.delegate = self
+            centralManager.connect(targetPeripheral!, options: nil)
+        }
+    }
+    
+    func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
+        print("Connected to peripheral: \(peripheral.name ?? "Unknown Device")")
+        // Now that we're connected, discover services and characteristics.
+        targetPeripheral?.discoverServices(nil)
+    }
+    
+    func peripheral(_ peripheral: CBPeripheral, didDiscoverServices error: Error?) {
+        if let services = peripheral.services {
+            for service in services {
+                // Discover characteristics for the service.
+                peripheral.discoverCharacteristics(nil, for: service)
             }
         }
     }
     
-    func startScanning() {
-        let uuid = UUID(uuidString: "88b78a0c-34ae-44d0-b30c-84153fec0f9a")!
-        let beaconRegion = CLBeaconRegion(uuid: uuid, major: 100, minor: 35, identifier: "MyBeacon")
-        
-        locationManager.startMonitoring(for: beaconRegion)
-        locationManager.startRangingBeacons(satisfying: beaconRegion.beaconIdentityConstraint)
-    }
-    
-    func locationManager(_ manager: CLLocationManager, didRangeBeacons beacons: [CLBeacon], in region: CLBeaconRegion) {
-        if let beacon = beacons.first {
-            print(Double(beacon.rssi))
+    func peripheral(_ peripheral: CBPeripheral, didDiscoverCharacteristicsFor service: CBService, error: Error?) {
+        if let characteristics = service.characteristics {
+            for characteristic in characteristics {
+                // Check if this is the UART characteristic.
+                if characteristic.uuid == CBUUID(string: "6e400002-b5a3-f393-e0a9-e50e24dcca9e") {
+                    uartCharacteristic = characteristic // Store the UART characteristic reference.
+                    // Send the string "301" over the UART characteristic.
+                    if let data = "201001".data(using: .utf8) {
+                        peripheral.writeValue(data, for: characteristic, type: .withResponse)
+                    }
+                }
+            }
         }
     }
 }
