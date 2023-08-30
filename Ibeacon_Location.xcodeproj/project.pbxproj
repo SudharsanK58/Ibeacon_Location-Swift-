@@ -146,6 +146,8 @@
 			dependencies = (
 			);
 			name = Ibeacon_Location;
+			packageProductDependencies = (
+			);
 			productName = Ibeacon_Location;
 			productReference = B4C1D851299B52640072403D /* Ibeacon_Location.app */;
 			productType = "com.apple.product-type.application";
@@ -218,6 +220,8 @@
 				Base,
 			);
 			mainGroup = B4C1D848299B52640072403D;
+			packageReferences = (
+			);
 			productRefGroup = B4C1D852299B52640072403D /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
