@@ -12,6 +12,9 @@ class ViewController: UIViewController, CLLocationManagerDelegate, CBCentralMana
     @IBOutlet weak var distanceLabel: UILabel!
     @IBOutlet weak var rssiLabel: UILabel!
     var nValue: Float = 1
+    let BLE_Characteristic_uuid_Tx = CBUUID(string: "6E400002-B5A3-F393-E0A9-E50E24DCCA9E")//(Property = Write without response)
+        let BLE_Characteristic_uuid_Rx = CBUUID(string: "6E400003-B5A3-F393-E0A9-E50E24DCCA9E")// (Property = Read/Notify)
+    var characteristicASCIIValue = ""
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -51,7 +54,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate, CBCentralMana
 
     func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String: Any], rssi RSSI: NSNumber) {
         if let deviceName = advertisementData[CBAdvertisementDataLocalNameKey] as? String {
-            if deviceName == "BIBO 1.1 A" {
+            if deviceName == "BIBO 1.1 C" {
                 print("Found target device: \(deviceName)")
 //                print(peripheral)
                 targetPeripheral = peripheral
@@ -69,7 +72,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate, CBCentralMana
     func peripheral(_ peripheral: CBPeripheral, didDiscoverServices error: Error?) {
         guard let services = peripheral.services else { return }
         for service in services {
-            peripheral.discoverCharacteristics([CBUUID(string: "6E400002-B5A3-F393-E0A9-E50E24DCCA9E")], for: service)
+            peripheral.discoverCharacteristics(nil, for: service)
 
         }
     }
@@ -85,6 +88,10 @@ class ViewController: UIViewController, CLLocationManagerDelegate, CBCentralMana
                     peripheral.writeValue(data, for: characteristic, type: .withResponse) // Or .withoutResponse if appropriate
                 }
             }
+            if characteristic.uuid.isEqual(BLE_Characteristic_uuid_Rx){
+                peripheral.setNotifyValue(true, for: characteristic)
+                peripheral.readValue(for: characteristic)
+            }
         }
     }
 
@@ -96,42 +103,26 @@ class ViewController: UIViewController, CLLocationManagerDelegate, CBCentralMana
             print("Successfully wrote value to characteristic")
         }
     }
-    func sendHex(hexLine: String) -> String{
-        return hexLine
-    }
-    func printLinesWithDelay(lines: [String], currentIndex: Int) {
-        if currentIndex < lines.count {
-            let line = lines[currentIndex].trimmingCharacters(in: .whitespacesAndNewlines)
-            if !line.isEmpty {
-                print(line)
-            }
-            DispatchQueue.global(qos: .userInteractive).asyncAfter(deadline: .now() + 1) {
-                self.printLinesWithDelay(lines: lines, currentIndex: currentIndex + 1) // Call recursively with a delay of 1 second (1000ms)
+    func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error: Error?) {
+            if  characteristic.isNotifying {
+                print("manisha",characteristic.isNotifying)
+                
+                if (characteristic.value != nil) {
+                    if characteristic.uuid == BLE_Characteristic_uuid_Rx{
+                        print("print",characteristic)
+                        if let ASCIIstring = String(data: characteristic.value!, encoding: String.Encoding.utf8) {
+                            characteristicASCIIValue = ASCIIstring
+                            
+                            if characteristicASCIIValue.count == 20 {
+                                
+                                
+                                
+                                print("Value Recieved: \((characteristicASCIIValue as String))\n")
+                            }
+                        }
+                    }
+                }
             }
         }
-    }
-
-    func fetchHexRecords() {
-        let url = URL(string: "https://karthi.ind.in/trynew.hex")!
-        URLSession.shared.dataTask(with: url) { data, response, error in
-            if let error = error {
-                print("Error fetching data: \(error)")
-                return
-            }
-
-            guard let data = data, let responseString = String(data: data, encoding: .utf8) else {
-                print("No data received")
-                return
-            }
-
-            // Remove empty lines and whitespace characters from the response string
-            let filteredResponse = responseString.replacingOccurrences(of: "\n", with: "").replacingOccurrences(of: " ", with: "")
-
-            // Print the response line by line with a delay of 1 second
-            let lines = filteredResponse.components(separatedBy: ":")
-            self.printLinesWithDelay(lines: lines, currentIndex: 0)
-        }.resume()
-    }
-
-
+    
 }
