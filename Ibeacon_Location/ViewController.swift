@@ -54,7 +54,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate, CBCentralMana
 
     func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String: Any], rssi RSSI: NSNumber) {
         if let deviceName = advertisementData[CBAdvertisementDataLocalNameKey] as? String {
-            if deviceName == "BIBO 1.1 C" {
+            if deviceName == "BIBO 1.1 A" {
                 print("Found target device: \(deviceName)")
 //                print(peripheral)
                 targetPeripheral = peripheral
@@ -105,18 +105,12 @@ class ViewController: UIViewController, CLLocationManagerDelegate, CBCentralMana
     }
     func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error: Error?) {
             if  characteristic.isNotifying {
-                print("manisha",characteristic.isNotifying)
-                
                 if (characteristic.value != nil) {
                     if characteristic.uuid == BLE_Characteristic_uuid_Rx{
                         print("print",characteristic)
                         if let ASCIIstring = String(data: characteristic.value!, encoding: String.Encoding.utf8) {
                             characteristicASCIIValue = ASCIIstring
-                            
                             if characteristicASCIIValue.count == 20 {
-                                
-                                
-                                
                                 print("Value Recieved: \((characteristicASCIIValue as String))\n")
                             }
                         }
